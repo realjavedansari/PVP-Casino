@@ -2951,6 +2951,3 @@ button:hover {
   --bs-backdrop-zindex: 0 !important;
 }
 
-.table{
-  --bs-table-bg: var(--bs-body-color)!important;
-}
