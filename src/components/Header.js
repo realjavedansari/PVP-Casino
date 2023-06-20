@@ -19,7 +19,7 @@ const Header = () => {
   const [cookies, setCookie] = useCookies(['walletAddress']);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [coinData, setCoinData] = useState([]);
-  
+  const [selectedCoin, setSelectedCoin] = useState(null);
   const [walletAddress, setWalletAddress] = useState('');
   const [privateKey, setPrivateKey] = useState('');
   const [memberId, setMemberId] = useState('');
@@ -304,10 +304,14 @@ const Header = () => {
     setShowModal(!showModal);
   };
 
-  const handleCoinSelect = (symbol) => {
-    // Perform any desired actions with the selected symbol
-    console.log('Selected coin symbol:', symbol);
-  };
+
+  
+    const handleCoinSelect = (selectedCoin) => {
+      // Handle the selected coin here
+      console.log('Selected coin:', selectedCoin);
+      // You can perform any additional logic or state updates based on the selected coin
+    };
+
   
   return (
     <>
@@ -504,7 +508,8 @@ const Header = () => {
         <li>
         <div className="wallets-balance">
         <img src="../img/p-simble.svg" alt="" className="simble" />
-        <strong>0.0</strong>
+        <strong>{selectedCoin ? selectedCoin.symbol : '0.0'}</strong>
+        {/* <strong>0.0</strong> */}
         <div className="bw-icon">
         {/* <img src="../img/black-wallet-icon.svg" alt="" /> */}
         <FaChevronDown
@@ -520,8 +525,8 @@ const Header = () => {
           
           <div className="dropdown-content">
           {coinData.map((coin) => (
-            <div key={coin.id}>
-             <img src={coinImages[coin.symbol]} alt={coin.name} />
+            <div key={coin.id} onClick={() => handleCoinSelect(coin)}>
+             <img src={coinImages[coin.symbol]} alt={coin.symbol} />
             {coin.name}
             </div>
             ))}
