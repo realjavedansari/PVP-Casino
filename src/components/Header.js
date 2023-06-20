@@ -233,11 +233,11 @@ const Header = () => {
     setWalletOpen(true);
   };
   
-  const handleConnectWalletClick = () => {
-    if (!isWalletOpen) {
-      connectWallet();
+  const handleDisconnectWalletClick = () => {
+    if (isWalletOpen) {
+      disconnectWallet();
     }
-  };
+  }
   
   const connectToWallet = async () => {
     if (window.ethereum) {
@@ -702,7 +702,7 @@ const Header = () => {
               </ul>
               </div>
               
-              <a href="#" className="disconnect-link"  onClick={handleConnectWalletClick}>
+              <a href="#" className="disconnect-link"  onClick={handleDisconnectWalletClick}>
               <img src="../img/logout-icon.svg" alt="" />
               <span>Disconnect</span>
               </a>
