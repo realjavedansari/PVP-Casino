@@ -234,10 +234,9 @@ const Header = () => {
   };
   
   const handleDisconnectWalletClick = () => {
-    if (isWalletOpen) {
-      disconnectWallet();
-    }
-  }
+    setWalletOpen(false);
+  };
+  
   
   const connectToWallet = async () => {
     if (window.ethereum) {
