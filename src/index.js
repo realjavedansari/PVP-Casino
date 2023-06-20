@@ -12,10 +12,6 @@ import AdminPage from './pages/AdminPage';
 import Error from './pages/Error';
 // import Admin from './components/Admin1/Admin';
 
-
-
-
-
 createRoot(document.getElementById('root')).render(
     <Router>
       <Routes>
