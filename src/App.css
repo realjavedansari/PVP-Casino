@@ -2942,3 +2942,7 @@ button:hover {
   height: 10px;
   margin-right: 8px;
 }
+
+.modal-backdrop.show{
+  opacity: 0 !important;
+}
