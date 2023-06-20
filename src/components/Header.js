@@ -25,7 +25,7 @@ const Header = () => {
   const [memberId, setMemberId] = useState('');
   const [coinSymbol, setCoinSymbol] = useState('');
   const [coinChainId, setCoinChainId] = useState('');
-
+  
   const coinChainIds = {
     BTC: 0,
     ETH: 1,
@@ -39,34 +39,34 @@ const Header = () => {
     XRP: 144,
   };
   
-
+  
   useEffect(() => {
     const checkMemberAddress = async () => {
       if (window.ethereum && window.ethereum.selectedAddress) {
         const connectedAddress = window.ethereum.selectedAddress.toLowerCase();
-
+        
         // Check if the connected wallet address is present in the member table
         const { data: members, error } = await supabase
-          .from('members')
-          .select('id')
-          .eq('wallet_address', connectedAddress);
-
+        .from('members')
+        .select('id')
+        .eq('wallet_address', connectedAddress);
+        
         if (error) {
           console.error(error);
           return;
         }
-
+        
         // If the connected wallet address is found, retrieve the member ID
         if (members && members.length > 0) {
           setMemberId(members[0].id);
         }
       }
     };
-
+    
     checkMemberAddress();
   }, []);
-
- 
+  
+  
   const fetchChainId = async (symbol) => {
     // Check if the symbol exists in coinChainIds
     if (coinChainIds.hasOwnProperty(symbol)) {
@@ -78,46 +78,46 @@ const Header = () => {
       return null; // Or any appropriate value indicating the absence of chain ID
     }
   };
-
+  
   const handleCoinSelection = async (selectedCoinSymbol) => {
     setCoinSymbol(selectedCoinSymbol);
-
+    
     // Fetch the chain ID for the selected coin
     const chainId = await fetchChainId(selectedCoinSymbol);
     setCoinChainId(chainId);
-
+    
     // Generate a new wallet address if the member ID is present and a coin is selected
     if (memberId && selectedCoinSymbol) {
       if (window.ethereum) {
         const web3 = new Web3(window.ethereum);
         try {
           await window.ethereum.enable();
-  
+          
           // Check if the user already has a stored Ethereum address
           const { data: existingAddressData, error: existingAddressError } = await supabase
-            .from('my_wallets')
-            .select('new_address')
-            .eq('mem_id', memberId)
-            .eq('symbol', selectedCoinSymbol);
-  
+          .from('my_wallets')
+          .select('new_address')
+          .eq('mem_id', memberId)
+          .eq('symbol', selectedCoinSymbol);
+          
           if (existingAddressError) {
             console.error(existingAddressError);
             return;
           }
-  
+          
           if (existingAddressData && existingAddressData.length > 0) {
             // If the user has an existing address, display it to the user
             setWalletAddress(existingAddressData[0].new_address);
             // You may also set the private key if needed
-  
+            
             return;
           }
-  
+          
           // If the user does not have an existing address, generate a new one
           const account = web3.eth.accounts.create();
           setWalletAddress(account.address);
           setPrivateKey(account.privateKey);
-  
+          
           // Store the data in the 'my_wallet' table
           await supabase.from('my_wallets').insert([
             {
@@ -136,7 +136,7 @@ const Header = () => {
       }
     }
   };
-
+  
   
   
   useEffect(() => {
@@ -196,7 +196,7 @@ const Header = () => {
   const supabaseURL = 'https://pvdwlvsbwghrvngjxvmw.supabase.co';
   const supabase = createClient(supabaseURL, supabaseKey);
   
-
+  
   
   const connectWallet = () => {
     setWalletOpen(true);
@@ -302,6 +302,11 @@ const Header = () => {
   // Function to toggle the modal visibility
   const toggleModal = () => {
     setShowModal(!showModal);
+  };
+  
+  const handleCoinSelect = (symbol) => {
+    // Perform any desired actions with the selected symbol
+    console.log('Selected coin symbol:', symbol);
   };
   
   return (
@@ -498,7 +503,8 @@ const Header = () => {
         
         <li>
         <div className="wallets-balance">
-        <img src="../img/p-simble.svg" alt="" className="simble" />
+        {/* <img src="../img/p-simble.svg" alt="" className="simble" /> */}
+        <span>{symbol}</span>
         <strong>0.0</strong>
         <div className="bw-icon">
         {/* <img src="../img/black-wallet-icon.svg" alt="" /> */}
@@ -512,11 +518,10 @@ const Header = () => {
         </div>
         
         {isDropdownOpen && (
-          
           <div className="dropdown-content">
           {coinData.map((coin) => (
-            <div key={coin.id}>
-             <img src={coinImages[coin.symbol]} alt={coin.name} />
+            <div key={coin.id} onClick={() => handleCoinSelect(coin.symbol)}>
+            <img src={coinImages[coin.symbol]} alt={coin.name} />
             {coin.name}
             </div>
             ))}
@@ -805,76 +810,76 @@ const Header = () => {
                   <small>Available: 0.12 DW</small>
                   </div>
                   {walletAddress && (
-                  <div className="form-group d-flex align-items-center">
-                  <p>Wallet Address: {walletAddress}</p>
-                  <QRCode value={walletAddress} style={{ border: '2px solid #fff' }}/>
-                  </div>
-                  )}
-                  </div>
-                  </div>
-                  <div className="tab-pane fade" id="withdraw" role="tabpanel" aria-labelledby="withdraw-tab">
-                  <div>
-                  <div className="form-group">
-                  <label>Type token name or symbol or paste in address</label>
-                  <input type="text" className="form-control" />
-                  </div>
-                  <div className="form-group">
-                  <label>Select a crypto coin</label>
-                  <div className="custom-dropdown">
-                  <select className="form-control">
-                  {cryptoCoins.map((coin) => (
-                    <option key={coin.symbol} value={coin.symbol}>
-                    {coin.name} ({coin.symbol})
-                    </option>
-                    ))}
-                    </select>
-                    </div>
-                    </div>
-                    <div className="form-group">
-                    <label>Enter Amount to Withdraw</label>
-                    <input type="number" className="form-control" />
-                    <small>Available: 0.12 DW</small>
-                    </div>
                     <div className="form-group d-flex align-items-center">
-                    <button className="btn big-yllw-btn2 px-4">Withdraw</button>
-                    <div className="gconnected">
-                    <em className="gdot"></em>
-                    <span>Connected</span>
+                    <p>Wallet Address: {walletAddress}</p>
+                    <QRCode value={walletAddress} style={{ border: '2px solid #fff' }}/>
+                    </div>
+                    )}
                     </div>
                     </div>
-                    </div>
-                    </div>
-                    <div className="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                    <div className="tab-pane fade" id="withdraw" role="tabpanel" aria-labelledby="withdraw-tab">
                     <div>
                     <div className="form-group">
                     <label>Type token name or symbol or paste in address</label>
                     <input type="text" className="form-control" />
                     </div>
                     <div className="form-group">
-                    <label>Enter Amount to Deposit</label>
-                    <input type="number" className="form-control" />
-                    <small>Available: 0.12 DW</small>
-                    </div>
-                    <div className="form-group d-flex align-items-center">
-                    <button className="btn big-yllw-btn2 px-4">Deposit</button>
-                    <div className="gconnected">
-                    <em className="gdot"></em>
-                    <span>Connected</span>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    </nav>
-                    </header>
-                    </>
-                    );
-                  };
-                  
-                  export default Header
-                  
+                    <label>Select a crypto coin</label>
+                    <div className="custom-dropdown">
+                    <select className="form-control">
+                    {cryptoCoins.map((coin) => (
+                      <option key={coin.symbol} value={coin.symbol}>
+                      {coin.name} ({coin.symbol})
+                      </option>
+                      ))}
+                      </select>
+                      </div>
+                      </div>
+                      <div className="form-group">
+                      <label>Enter Amount to Withdraw</label>
+                      <input type="number" className="form-control" />
+                      <small>Available: 0.12 DW</small>
+                      </div>
+                      <div className="form-group d-flex align-items-center">
+                      <button className="btn big-yllw-btn2 px-4">Withdraw</button>
+                      <div className="gconnected">
+                      <em className="gdot"></em>
+                      <span>Connected</span>
+                      </div>
+                      </div>
+                      </div>
+                      </div>
+                      <div className="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                      <div>
+                      <div className="form-group">
+                      <label>Type token name or symbol or paste in address</label>
+                      <input type="text" className="form-control" />
+                      </div>
+                      <div className="form-group">
+                      <label>Enter Amount to Deposit</label>
+                      <input type="number" className="form-control" />
+                      <small>Available: 0.12 DW</small>
+                      </div>
+                      <div className="form-group d-flex align-items-center">
+                      <button className="btn big-yllw-btn2 px-4">Deposit</button>
+                      <div className="gconnected">
+                      <em className="gdot"></em>
+                      <span>Connected</span>
+                      </div>
+                      </div>
+                      </div>
+                      </div>
+                      </div>
+                      </div>
+                      </div>
+                      </div>
+                      </div>
+                      </div>
+                      </nav>
+                      </header>
+                      </>
+                      );
+                    };
+                    
+                    export default Header
+                    
