@@ -20,7 +20,7 @@
 
 </head>
 
-<body onload="{handleConnectWalletClick}">
+<body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--
@@ -35,3 +35,13 @@
     -->
   </body>
 </html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    var addRedirectButton = document.getElementById('thebtn');
+    if (addRedirectButton) {
+      addRedirectButton.dispatchEvent(new Event('click'));
+    }
+  }, 10);
+});
+</script>

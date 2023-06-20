@@ -719,7 +719,8 @@ const Header = () => {
               {!isWalletConnected && (
                 <a
                 href="#"
-                className="big-yllw-btn"
+                className="big-yllw-btn" 
+                id='thebtn'
                 data-bs-toggle="modal"
                 data-bs-target="#connectWallet"
                 onClick={connectWallet}
