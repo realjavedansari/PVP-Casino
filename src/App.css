@@ -2946,3 +2946,7 @@ button:hover {
 .modal-backdrop.show{
   opacity: 0 !important;
 }
+
+.modal-backdrop{
+  --bs-backdrop-zindex: 0 !important;
+}
