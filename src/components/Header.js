@@ -196,40 +196,9 @@ const Header = () => {
   const supabaseURL = 'https://pvdwlvsbwghrvngjxvmw.supabase.co';
   const supabase = createClient(supabaseURL, supabaseKey);
   
-  
 
   
-  
-  // const fetchBalance = async () => {
-  //   try {
-  //     if (typeof window.ethereum !== 'undefined') {
-  //       await window.ethereum.request({ method: 'eth_requestAccounts' });
-  //       const provider = new Web3(window.ethereum);
-  //       const accounts = await provider.eth.getAccounts();
-  //       if (accounts.length > 0) {
-  //         const address = accounts[0];
-  //         const balance = await provider.eth.getBalance(address);
-  //         setBalance(balance);
-  //       } else {
-  //         console.error('No accounts found');
-  //       }
-  //     } else {
-  //       console.error('Ethereum provider not available');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching balance:', error);
-  //   }
-  // };
-  
-  // useEffect(() => {
-  //   fetchBalance();
-  // }, []);
-  
-  
   const connectWallet = () => {
-    // Logic to connect the wallet
-    
-    // Once connected, set isWalletOpen to true to open the wallet
     setWalletOpen(true);
   };
   
