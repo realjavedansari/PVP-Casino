@@ -720,7 +720,7 @@ const Header = () => {
                 <a
                 href="#"
                 className="big-yllw-btn" 
-                // id='thebtn'
+                id='thebtn'
                 data-bs-toggle="modal"
                 data-bs-target="#connectWallet"
                 onClick={connectWallet}
@@ -742,31 +742,31 @@ const Header = () => {
                 </p>
                 <ul>
                 <li>
-                <a href="#" onClick={connectToWallet} id='thebtn'>
+                <a href="#" onClick={connectToWallet}>
                 <img src="../img/binance-wallet.png" alt="" />
                 <span>Binance Wallet</span>
                 </a>
                 </li>
                 <li>
-                <a href="#" onClick={connectToWallet} id='thebtn'>
+                <a href="#" onClick={connectToWallet}>
                 <img src="../img/trust-wallet.png" alt="" />
                 <span>Trust Wallet</span>
                 </a>
                 </li>
                 <li>
-                <a href="#" onClick={connectToWallet} id='thebtn'>
+                <a href="#" onClick={connectToWallet}>
                 <img src="../img/metaMask-wallet.png" alt="" />
                 <span>Metamask</span>
                 </a>
                 </li>
                 <li>
-                <a href="#" onClick={connectToWallet} id='thebtn'>
+                <a href="#" onClick={connectToWallet}>
                 <img src="../img/coinbase-wallet.png" alt="" />
                 <span>Coinbase Wallet</span>
                 </a>
                 </li>
                 <li>
-                <a href="#" onClick={connectToWallet} id='thebtn'>
+                <a href="#" onClick={connectToWallet}>
                 <img src="../img/wallet-connect.png" alt="" />
                 <span>WalletConnect</span>
                 </a>
