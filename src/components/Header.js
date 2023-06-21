@@ -520,7 +520,6 @@ const Header = () => {
         />
         </div>
         </div>
-        
         {isDropdownOpen && (
           
           <div className="dropdown-content">
