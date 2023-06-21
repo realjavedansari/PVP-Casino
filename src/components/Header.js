@@ -526,7 +526,7 @@ const Header = () => {
           <div className="dropdown-content">
           {coinData.map((coin) => (
             <div key={coin.id} onClick={() => handleCoinSelect(coin)}>
-             <img src={coinImages[coin.symbol]} alt={coin.name} />
+             <img src={coinImages[coin.symbol]} />
             {coin.name}
             </div>
             ))}
