@@ -25,7 +25,12 @@ const Header = () => {
   const [memberId, setMemberId] = useState('');
   const [coinSymbol, setCoinSymbol] = useState('');
   const [coinChainId, setCoinChainId] = useState('');
-
+  const [token, setToken] = useState('');
+  const [coin, setCoin] = useState('');
+  const [amount, setAmount] = useState('');
+  const [balance, setBalance] = useState('')
+  const [depositAmount, setDepositAmount] = useState(0);
+  
   const coinChainIds = {
     BTC: 0,
     ETH: 1,
@@ -39,34 +44,34 @@ const Header = () => {
     XRP: 144,
   };
   
-
+  
   useEffect(() => {
     const checkMemberAddress = async () => {
       if (window.ethereum && window.ethereum.selectedAddress) {
         const connectedAddress = window.ethereum.selectedAddress.toLowerCase();
-
+        
         // Check if the connected wallet address is present in the member table
         const { data: members, error } = await supabase
-          .from('members')
-          .select('id')
-          .eq('wallet_address', connectedAddress);
-
+        .from('members')
+        .select('id')
+        .eq('wallet_address', connectedAddress);
+        
         if (error) {
           console.error(error);
           return;
         }
-
+        
         // If the connected wallet address is found, retrieve the member ID
         if (members && members.length > 0) {
           setMemberId(members[0].id);
         }
       }
     };
-
+    
     checkMemberAddress();
   }, []);
-
- 
+  
+  
   const fetchChainId = async (symbol) => {
     // Check if the symbol exists in coinChainIds
     if (coinChainIds.hasOwnProperty(symbol)) {
@@ -78,65 +83,78 @@ const Header = () => {
       return null; // Or any appropriate value indicating the absence of chain ID
     }
   };
-
+  
   const handleCoinSelection = async (selectedCoinSymbol) => {
     setCoinSymbol(selectedCoinSymbol);
-
+    
     // Fetch the chain ID for the selected coin
     const chainId = await fetchChainId(selectedCoinSymbol);
     setCoinChainId(chainId);
+    
+// Generate a new wallet address if the member ID is present and a coin is selected
+if (memberId && selectedCoinSymbol) {
+  if (window.ethereum) {
+    const web3 = new Web3(window.ethereum);
+    try {
+      await window.ethereum.enable();
 
-    // Generate a new wallet address if the member ID is present and a coin is selected
-    if (memberId && selectedCoinSymbol) {
-      if (window.ethereum) {
-        const web3 = new Web3(window.ethereum);
-        try {
-          await window.ethereum.enable();
-  
-          // Check if the user already has a stored Ethereum address
-          const { data: existingAddressData, error: existingAddressError } = await supabase
-            .from('my_wallets')
-            .select('new_address')
-            .eq('mem_id', memberId)
-            .eq('symbol', selectedCoinSymbol);
-  
-          if (existingAddressError) {
-            console.error(existingAddressError);
-            return;
-          }
-  
-          if (existingAddressData && existingAddressData.length > 0) {
-            // If the user has an existing address, display it to the user
-            setWalletAddress(existingAddressData[0].new_address);
-            // You may also set the private key if needed
-  
-            return;
-          }
-  
-          // If the user does not have an existing address, generate a new one
-          const account = web3.eth.accounts.create();
-          setWalletAddress(account.address);
-          setPrivateKey(account.privateKey);
-  
-          // Store the data in the 'my_wallet' table
-          await supabase.from('my_wallets').insert([
-            {
-              mem_id: memberId,
-              symbol: selectedCoinSymbol,
-              chain_id: chainId,
-              new_address: account.address,
-              private_key: account.privateKey,
-            },
-          ]);
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        console.error('Web3 not found!');
+      // Check if the user already has a stored Ethereum address
+      const { data: existingAddressData, error: existingAddressError } = await supabase
+        .from('my_wallets')
+        .select('new_address')
+        .eq('mem_id', memberId)
+        .eq('symbol', selectedCoinSymbol);
+
+      if (existingAddressError) {
+        console.error(existingAddressError);
+        return;
       }
-    }
-  };
 
+      if (existingAddressData && existingAddressData.length > 0) {
+        // If the user has an existing address, display it to the user
+        const existingAddress = existingAddressData[0].new_address;
+        setWalletAddress(existingAddress);
+
+        // Get the balance of the wallet address
+        const balance = await web3.eth.getBalance(existingAddress);
+        const balanceInEther = web3.utils.fromWei(balance, 'ether');
+        console.log('Wallet Balance (in Ether):', balanceInEther);
+
+        // You may also set the private key if needed
+
+        return;
+      }
+
+      // If the user does not have an existing address, generate a new one
+      const account = web3.eth.accounts.create();
+      const newAddress = account.address;
+      setWalletAddress(newAddress);
+      setPrivateKey(account.privateKey);
+
+      // Store the data in the 'my_wallet' table
+      await supabase.from('my_wallets').insert([
+        {
+          mem_id: memberId,
+          symbol: selectedCoinSymbol,
+          chain_id: chainId,
+          new_address: newAddress,
+          private_key: account.privateKey,
+        },
+      ]);
+
+      // Get the balance of the wallet address
+      const balance = await web3.eth.getBalance(newAddress);
+      const balanceInEther = web3.utils.fromWei(balance, 'ether');
+      console.log('Wallet Balance (in Ether):', balanceInEther);
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
+    console.error('Web3 not found!');
+  }
+}
+  }
+  
   
   
   useEffect(() => {
@@ -196,7 +214,7 @@ const Header = () => {
   const supabaseURL = 'https://pvdwlvsbwghrvngjxvmw.supabase.co';
   const supabase = createClient(supabaseURL, supabaseKey);
   
-
+  
   
   const connectWallet = () => {
     setWalletOpen(true);
@@ -303,15 +321,48 @@ const Header = () => {
   const toggleModal = () => {
     setShowModal(!showModal);
   };
-
-
   
-    const handleCoinSelect = (selectedCoin) => {
-      // Handle the selected coin here
-      console.log('Selected coin:', selectedCoin);
-      // You can perform any additional logic or state updates based on the selected coin
-    };
-
+  
+  
+  const handleCoinSelect = (selectedCoin) => {
+    // Handle the selected coin here
+    console.log('Selected coin:', selectedCoin);
+    // You can perform any additional logic or state updates based on the selected coin
+  };
+  
+  const handleWithdraw = () => {
+    // Perform account verification and other checks before initiating withdrawal
+    if (!token || !coin || !amount) {
+      console.error('Incomplete withdrawal information');
+      return;
+    }
+  
+    // Deduct the withdrawal amount from the user's balance (assuming balance is stored in state or variable)
+    const updatedBalance = balance - amount;
+    if (updatedBalance < 0) {
+      console.error('Insufficient funds');
+      return;
+    }
+  
+    // Process the withdrawal and update user's balance (assuming balance is stored in state or variable)
+    setBalance(updatedBalance);
+  
+    // Store the withdrawal data in Supabase
+    supabase
+      .from('withdrawals')
+      .insert([{ token: token, coin: coin, amount: amount }])
+      .then((response) => {
+        console.log('Withdrawal stored successfully:', response);
+        // Perform any additional actions here, such as displaying a success message or updating UI
+      })
+      .catch((error) => {
+        console.error('Error storing withdrawal:', error);
+        // Handle error scenarios, such as displaying an error message or reverting the UI state
+      });
+  
+    // Display withdrawal confirmation or perform any additional actions
+    console.log('Withdrawal processed successfully');
+  };
   
   return (
     <>
@@ -508,7 +559,7 @@ const Header = () => {
         <li>
         <div className="wallets-balance">
         <img src="../img/p-simble.svg" alt="" className="simble" />
-        <strong>{selectedCoin ? selectedCoin.symbol : '0.0'}</strong>
+        <strong>{selectedCoin ? depositAmount : '0.0'}</strong>
         {/* <strong>0.0</strong> */}
         <div className="bw-icon">
         {/* <img src="../img/black-wallet-icon.svg" alt="" /> */}
@@ -525,7 +576,7 @@ const Header = () => {
           <div className="dropdown-content">
           {coinData.map((coin) => (
             <div key={coin.id} onClick={() => handleCoinSelect(coin)}>
-             <img src={coinImages[coin.symbol]} />
+            <img src={coinImages[coin.symbol]} />
             {coin.name}
             </div>
             ))}
@@ -792,28 +843,28 @@ const Header = () => {
                 <div className="tab-content" id="myTabContent">
                 <div className="tab-pane fade show active" id="deposit" role="tabpanel" aria-labelledby="deposit-tab">
                 <div>
-                <div className="form-group">
+                {/* <div className="form-group">
                 <label>Type token name or symbol or paste in address</label>
                 <input type="text" className="form-control" value={tokenAddress} onChange={e => setTokenAddress(e.target.value)} />
+              </div> */}
+              <div className="form-group">
+              <label>Select a crypto coin</label>
+              <div className="custom-dropdown">
+              <select className="form-control" value={coinSymbol} onChange={(e) => handleCoinSelection(e.target.value)}>
+              {cryptoCoins.map((coin) => (
+                <option key={coin.symbol} value={coin.symbol}>
+                {coin.name} ({coin.symbol})
+                </option>
+                ))}
+                </select>
+                </div>
                 </div>
                 <div className="form-group">
-                <label>Select a crypto coin</label>
-                <div className="custom-dropdown">
-                <select className="form-control" value={coinSymbol} onChange={(e) => handleCoinSelection(e.target.value)}>
-                {cryptoCoins.map((coin) => (
-                  <option key={coin.symbol} value={coin.symbol}>
-                  {coin.name} ({coin.symbol})
-                  </option>
-                  ))}
-                  </select>
-                  </div>
-                  </div>
-                  <div className="form-group">
-                  <label>Enter Amount to Deposit</label>
-                  <input type="number" className="form-control" />
-                  <small>Available: 0.12 DW</small>
-                  </div>
-                  {walletAddress && (
+                <label>Enter Amount to Deposit</label>
+                <input type="number" className="form-control" />
+                <small>Available: {depositAmount} DW</small>
+                </div>
+                {walletAddress && (
                   <div className="form-group d-flex align-items-center">
                   <p>Wallet Address: {walletAddress}</p>
                   <QRCode value={walletAddress} style={{ border: '2px solid #fff' }}/>
@@ -825,12 +876,12 @@ const Header = () => {
                   <div>
                   <div className="form-group">
                   <label>Type token name or symbol or paste in address</label>
-                  <input type="text" className="form-control" />
+                  <input type="text" className="form-control" value={token} onChange={(e) => setToken(e.target.value)} />
                   </div>
                   <div className="form-group">
                   <label>Select a crypto coin</label>
                   <div className="custom-dropdown">
-                  <select className="form-control">
+                  <select className="form-control" value={depositAmount} onChange={(e) => setCoin(e.target.value)}>
                   {cryptoCoins.map((coin) => (
                     <option key={coin.symbol} value={coin.symbol}>
                     {coin.name} ({coin.symbol})
@@ -841,15 +892,11 @@ const Header = () => {
                     </div>
                     <div className="form-group">
                     <label>Enter Amount to Withdraw</label>
-                    <input type="number" className="form-control" />
+                    <input type="number" className="form-control" value={amount} onChange={(e) => setAmount(e.target.value)} />
                     <small>Available: 0.12 DW</small>
                     </div>
                     <div className="form-group d-flex align-items-center">
-                    <button className="btn big-yllw-btn2 px-4">Withdraw</button>
-                    <div className="gconnected">
-                    <em className="gdot"></em>
-                    <span>Connected</span>
-                    </div>
+                    <button className="btn big-yllw-btn2 px-4" onClick={handleWithdraw}>Withdraw</button>
                     </div>
                     </div>
                     </div>
