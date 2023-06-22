@@ -86,68 +86,69 @@ const Header = () => {
   
   const handleCoinSelection = async (selectedCoinSymbol) => {
     setCoinSymbol(selectedCoinSymbol);
-  
+    
     // Fetch the chain ID for the selected coin and network
     const chainId = fetchChainId(selectedCoinSymbol);
     if (chainId === null) {
       // Handle the case when chain ID is not found
       return;
     }
-  
-    // Generate a new wallet address if the member ID is present
-    if (memberId  && selectedCoinSymbol) {
+
+    
+    // Generate a new wallet address if the member ID is present and a coin is selected
+    if (memberId && selectedCoinSymbol) {
       if (window.ethereum) {
         const web3 = new Web3(window.ethereum);
         try {
           await window.ethereum.enable();
-  
+          
           // Check if the user already has a stored Ethereum address
           const { data: existingAddressData, error: existingAddressError } = await supabase
             .from('my_wallets')
             .select('new_address')
-            .eq('symbol', 'common'); // Use a common symbol for all coins
-  
+            .eq('symbol', selectedCoinSymbol);
+          
           if (existingAddressError) {
             console.error(existingAddressError);
             return;
           }
-  
+          
           if (existingAddressData && existingAddressData.length > 0) {
             // If there is an existing address, display it to the user
             const existingAddress = existingAddressData[0].new_address;
             setWalletAddress(existingAddress);
-  
+            
             // Get the balance of the wallet address
             const balance = await web3.eth.getBalance(existingAddress);
             const balanceInEther = web3.utils.fromWei(balance, 'ether');
             console.log('Wallet Balance (in Ether):', balanceInEther);
-  
+            
             // You may also set the private key if needed
-  
+            
             return;
           }
-  
+          
           // If there is no existing address, generate a new one
           const account = web3.eth.accounts.create();
           const newAddress = account.address;
           setWalletAddress(newAddress);
           setPrivateKey(account.privateKey);
-  
+          
           // Store the data in the 'my_wallets' table
           await supabase.from('my_wallets').insert([
             {
-              mem_id: memberId,
-              symbol: 'common', // Use a common symbol for all coins
+              symbol: selectedCoinSymbol,
               chain_id: chainId,
               new_address: newAddress,
               private_key: account.privateKey,
             },
           ]);
-  
+          
           // Get the balance of the wallet address
           const balance = await web3.eth.getBalance(newAddress);
           const balanceInEther = web3.utils.fromWei(balance, 'ether');
           console.log('Wallet Balance (in Ether):', balanceInEther);
+
         } catch (error) {
           console.error(error);
         }
@@ -155,7 +156,7 @@ const Header = () => {
         console.error('Web3 not found!');
       }
     }
-  };
+  }
   
   
   
