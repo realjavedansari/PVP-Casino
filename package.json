@@ -29,6 +29,7 @@
     "bootstrap-icons": "^1.10.5",
     "bootstrap-toggle": "^2.2.2",
     "boxicons": "^2.1.4",
+    "buffer": "^6.0.3",
     "chart.js": "^3.0.0",
     "crypto-js": "^4.1.1",
     "ethereumjs-wallet": "^1.0.2",
