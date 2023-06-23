@@ -2,6 +2,7 @@
 import React, {useState} from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/sidebar';
+import ClosetGame from '../components/Closet';
 
 const Closet = () => {
   return (
@@ -13,7 +14,8 @@ const Closet = () => {
     <div className="col-md-8">
     <div className="mb-4">
     
-   <img src='../img/crash-game-1.png' alt="" className="img-fluid w-100" />
+   {/* <img src='../img/crash-game-1.png' alt="" className="img-fluid w-100" /> */}
+   <ClosetGame />
     
     </div>
     

@@ -15,3 +15,151 @@
     left: 70px;
     font-size: 50px;
 }
+
+
+/* Closet game */
+
+.container{
+    display: flex;
+    justify-content: space-between;
+    
+  }
+  .closet {
+    /* width: 300px;
+    height: 350px; */
+    position: relative;
+    margin: 20px;
+    overflow: visible;
+    cursor: pointer;
+    transition: width 1s ease-in-out, height 1s ease-in-out;
+  }
+  
+  .closet-zoom {
+    width: 400px;
+    height: 600px;
+    transform: scale(1);
+  }
+  
+  .door {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
+    background: url('/public/img/closed_door_new.png');
+    transition: transform 1s ease-in-out;
+    transform-origin: bottom center;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  
+  .door-open {
+    /* transform: rotateX(-90deg); */
+    transform-origin: top right;
+    transform: rotateY(-90deg);
+    transition: transform 1s;
+  }
+  
+  /* .hide-door {
+    display: none;
+  } */
+  
+  .center-door {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .character {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s ease-in-out;
+  }
+  
+  .slideIn {
+    opacity: 1;
+  }
+  
+  
+  .character#biden {
+    background-image: url("/public/img/biden.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  
+  .character#pelosi {
+    background-image: url("/public/img/nancy.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: contain;
+  
+  }
+  
+  .character#clinton {
+    background-image: url("/public/img/clinton.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: contain;
+  
+  }
+  
+  .character#trump {
+    background-image: url("/public/img/trump.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: contain;
+  
+  }
+  
+  @keyframes slideInFromLeft {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+  }
+  @keyframes slideInFromRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+  }
+  
+  
+  @keyframes characterAnimation {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+  }
+  
+  /* Responsive Code */
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .closet {
+    /* background-image: url('your-image-url.jpg'); */
+    height: 350px;
+    width: calc(25% - 20px);
+    background-repeat: no-repeat;
+    margin: 10px;
+  }
