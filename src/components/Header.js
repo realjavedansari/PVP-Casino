@@ -135,34 +135,38 @@ if (memberId && selectedCoinSymbol) {
       }
       
       if (selectedCoinSymbol === 'BTC') {
-        // Generate a new BTC address and private key
         const bitcoin = require('bitcoinjs-lib');
-        const { address, privateKey } = bitcoin.ECPair.makeRandom().getAddress();
-
+      
+        // Generate a new BTC address and private key
+        const keyPair = bitcoin.ECPair.makeRandom();
+        const address = keyPair.address;
+        const privateKey = keyPair.toWIF();
+      
         // Update the state with the new BTC address and private key
         setWalletAddress(address);
         setPrivateKey(privateKey);
-
+      
         // Insert a new row for the BTC address in the 'my_wallets' table
         await supabase.from('my_wallets').insert([
           {
             mem_id: memberId,
             symbol: 'BTC',
-            chain_id: '',
+            chain_id: 'insert_chain_id_here', // Provide the appropriate chain ID or network identifier
             new_address: address,
             private_key: privateKey,
           },
         ]);
-        
+      
         // Get the balance of the BTC wallet address using a blockchain explorer API
         const btcBalanceApi = `https://blockchain.info/q/addressbalance/${address}`;
         const response = await fetch(btcBalanceApi);
         const balanceInSatoshis = await response.text();
         const balanceInBTC = Number(balanceInSatoshis) / 100000000; // Convert satoshis to BTC
         console.log('Wallet Balance (in BTC):', balanceInBTC);
-
+      
         return;
       }
+      
       
       // If there is no existing wallet, generate a new one
       const account = web3.eth.accounts.create();
