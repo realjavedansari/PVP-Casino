@@ -95,32 +95,33 @@ const Header = () => {
   
   const handleCoinSelection = async (selectedCoinSymbol) => {
     setCoinSymbol(selectedCoinSymbol);
-  
+    
     // Fetch the chain ID for the selected coin and network
     const chainId = fetchChainId(selectedCoinSymbol);
     if (chainId === null) {
       // Handle the case when chain ID is not found
       return;
     }
-  
+    
+    
     // Generate a new wallet address if the member ID is present and a coin is selected
     if (memberId && selectedCoinSymbol) {
       if (window.ethereum) {
         const web3 = new Web3(window.ethereum);
         try {
           await window.ethereum.enable();
-  
+          
           // Check if the user already has a stored address and private key
           const { data: existingWalletData, error: existingWalletError } = await supabase
-            .from('my_wallets')
-            .select('new_address, private_key')
-            .eq('mem_id', memberId);
-  
+          .from('my_wallets')
+          .select('new_address, private_key')
+          .eq('mem_id', memberId);
+          
           if (existingWalletError) {
             console.error(existingWalletError);
             return;
           }
-  
+          
           if (existingWalletData && existingWalletData.length > 0) {
             // If there is an existing wallet, use its address and private key
             const existingWallet = existingWalletData[0];
@@ -128,32 +129,32 @@ const Header = () => {
             const existingPrivateKey = existingWallet.private_key;
             setWalletAddress(existingAddress);
             setPrivateKey(existingPrivateKey);
-  
+            
             await supabase
-              .from('my_wallets')
-              .update({ symbol: selectedCoinSymbol, chain_id: chainId })
-              .eq('mem_id', memberId);
-  
+            .from('my_wallets')
+            .update({ symbol: selectedCoinSymbol, chain_id: chainId })
+            .eq('mem_id', memberId);
+            
             // Get the balance of the wallet address
             const balance = await web3.eth.getBalance(existingAddress);
             const balanceInEther = web3.utils.fromWei(balance, 'ether');
             console.log('Wallet Balance (in Ether):', balanceInEther);
-  
+            
             return;
           }
-  
+          
           if (selectedCoinSymbol === 'btc') {
             const bitcoin = require('bitcoinjs-lib');
-  
+            
             // Generate a new BTC address and private key
             const keyPair = bitcoin.ECPair.makeRandom();
             const btcAddress = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey }).address;
             const privateKey = keyPair.toWIF();
-  
+            
             // Update the state with the new BTC address and private key
             setWalletAddress(btcAddress);
             setPrivateKey(privateKey);
-  
+            
             // Insert a new row for the BTC address in the 'my_wallets' table
             await supabase.from('my_wallets').insert([
               {
@@ -164,64 +165,36 @@ const Header = () => {
                 private_key: privateKey,
               },
             ]);
-  
-            // Perform BTC transaction operations
-            // Example: Sending BTC to another address
-            const recipientAddress = 'RECIPIENT_ADDRESS';
-            const btcAmount = ''; // Amount to send in BTC
-            const tx = new bitcoin.TransactionBuilder(bitcoin.networks.bitcoin);
-            tx.addInput('INPUT_TRANSACTION_ID', 0); // Add input from a previous transaction
-            tx.addOutput(recipientAddress, btcAmount); // Add output to the recipient address
-            tx.sign(0, keyPair); // Sign the transaction with the private key
-            const builtTx = tx.build().toHex(); // Convert the transaction to a hex string
-            console.log('BTC Transaction:', builtTx);
-  
+            
             return;
           }
-  
-          if (selectedCoinSymbol === 'eth') {
-            // Generate a new Ethereum address and private key
-            const account = web3.eth.accounts.create();
-            const newAddress = account.address;
-            const privateKey = account.privateKey;
-            setWalletAddress(newAddress);
-            setPrivateKey(privateKey);
-  
-            // Insert a new row for the selected coin in the 'my_wallets' table
-            await supabase.from('my_wallets').insert([
-              {
-                mem_id: memberId,
-                symbol: selectedCoinSymbol,
-                chain_id: chainId,
-                new_address: newAddress,
-                private_key: privateKey,
-              },
-            ]);
-  
-            // Perform ETH transaction operations
-            // Example: Sending ETH to another address
-            const recipientAddress = 'RECIPIENT_ADDRESS';
-            const ethAmount = web3.utils.toWei('0.1', 'ether'); // Amount to send in Wei
-            const nonce = await web3.eth.getTransactionCount(newAddress);
-            const gasPrice = await web3.eth.getGasPrice();
-            const gasLimit = 21000; // Standard gas limit for ETH transfer
-            const txObject = {
-              nonce,
-              gasPrice,
-              gasLimit,
-              to: recipientAddress,
-              value: ethAmount,
-            };
-            const signedTx = await web3.eth.accounts.signTransaction(txObject, privateKey);
-            const txHash = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
-            console.log('ETH Transaction Hash:', txHash);
-  
-            return;
-          }
-  
-          // Additional transaction operations for other coins can be added here
-  
-          console.error('Unsupported coin symbol:', selectedCoinSymbol);
+          
+          
+          
+          // If there is no existing wallet, generate a new one
+          const account = web3.eth.accounts.create();
+          const newAddress = account.address;
+          const privateKey = account.privateKey;
+          setWalletAddress(newAddress);
+          setPrivateKey(privateKey);
+          
+          // Insert a new row for the selected coin in the 'my_wallets' table
+          await supabase.from('my_wallets').insert([
+            {
+              mem_id: memberId,
+              symbol: selectedCoinSymbol,
+              chain_id: chainId,
+              new_address: newAddress,
+              private_key: privateKey,
+            },
+          ]);
+          
+          
+          // Get the balance of the wallet address
+          const balance = await web3.eth.getBalance(newAddress);
+          const balanceInEther = web3.utils.fromWei(balance, 'ether');
+          console.log('Wallet Balance (in Ether):', balanceInEther);
+          
         } catch (error) {
           console.error(error);
         }
@@ -229,8 +202,8 @@ const Header = () => {
         console.error('Web3 not found!');
       }
     }
-  };
-  
+    
+  }
   
   
   
