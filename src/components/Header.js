@@ -88,7 +88,7 @@ const Header = () => {
   };
 
   const handleNetworkSelection = (selectedNetwork) => {
-    // Perform actions based on the selected network
+    setNetwork(selectedNetwork);
     console.log("Selected Network:", selectedNetwork);
     // Additional logic...
   }
@@ -143,31 +143,7 @@ const Header = () => {
             return;
           }
           
-          if (selectedCoinSymbol === 'btc') {
-            const bitcoin = require('bitcoinjs-lib');
-            
-            // Generate a new BTC address and private key
-            const keyPair = bitcoin.ECPair.makeRandom();
-            const btcAddress = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey }).address;
-            const privateKey = keyPair.toWIF();
-            
-            // Update the state with the new BTC address and private key
-            setWalletAddress(btcAddress);
-            setPrivateKey(privateKey);
-            
-            // Insert a new row for the BTC address in the 'my_wallets' table
-            await supabase.from('my_wallets').insert([
-              {
-                mem_id: memberId,
-                symbol: selectedCoinSymbol,
-                chain_id: chainId, // Provide the appropriate chain ID or network identifier
-                new_address: btcAddress,
-                private_key: privateKey,
-              },
-            ]);
-            
-            return;
-          }
+         
           
           
           
