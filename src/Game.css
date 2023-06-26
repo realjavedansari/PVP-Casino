@@ -45,7 +45,7 @@
     height: 100%;
     position: absolute;
     bottom: 0;
-    background: url('/public/img/closed_door_new.png');
+    background: url('../public/img/closed_door_new.png');
     transition: transform 1s ease-in-out;
     transform-origin: bottom center;
     background-repeat: no-repeat;
@@ -87,38 +87,26 @@
   }
   
   
-  .character#biden {
-    background-image: url("/public/img/biden.png");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-size: contain;
+ #biden {
+    background-image: url("./assets/biden.png");
   }
   
-  .character#pelosi {
-    background-image: url("/public/img/nancy.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-size: contain;
+ #pelosi {
+    background-image: url("./assets/nancy.jpg");
   
   }
   
-  .character#clinton {
-    background-image: url("/public/img/clinton.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-size: contain;
+ #clinton {
+    background-image: url("./assets/clinton.jpg");
   
   }
   
-  .character#trump {
-    background-image: url("/public/img/trump.png");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-size: contain;
+ #trump {
+    background-image: url("./assets/trump.png");
   
   }
   
-  @keyframes slideInFromLeft {
+  /* @keyframes slideInFromLeft {
     0% {
         transform: translateX(-100%);
         opacity: 0;
@@ -148,7 +136,7 @@
         opacity: 1;
     }
   }
-  
+   */
   /* Responsive Code */
   .container {
     display: flex;
