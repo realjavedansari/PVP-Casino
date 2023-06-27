@@ -82,31 +82,43 @@
     transition: opacity 1s ease-in-out;
   }
   
-  .slideIn {
+  /* .slideIn {
     opacity: 1;
   }
-  
+   */
   
  #biden {
-    background-image: url("./assets/biden.png");
+    background-image: url("../src/assets/biden.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: contain;
   }
   
  #pelosi {
-    background-image: url("./assets/nancy.jpg");
+    background-image: url("../src/assets/nancy.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: contain;
   
   }
   
  #clinton {
-    background-image: url("./assets/clinton.jpg");
+    background-image: url("../src/assets/clinton.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: contain;
   
   }
   
  #trump {
-    background-image: url("./assets/trump.png");
+    background-image: url("../src/assets/trump.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: contain;
   
   }
   
-  /* @keyframes slideInFromLeft {
+  @keyframes slideInFromLeft {
     0% {
         transform: translateX(-100%);
         opacity: 0;
@@ -136,7 +148,7 @@
         opacity: 1;
     }
   }
-   */
+  
   /* Responsive Code */
   .container {
     display: flex;

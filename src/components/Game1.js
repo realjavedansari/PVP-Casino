@@ -39,7 +39,7 @@ const Game = ({ betAmount }) => {
         const ctx = canvas.getContext('2d');
         const img = imgRef.current;
         
-        let mainRandomNumber = 10;
+        let mainRandomNumber = 4;
         
         let speed = 0.01;
         let curvePoints = [];

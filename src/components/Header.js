@@ -9,7 +9,6 @@ import { useCookies } from 'react-cookie';
 import QRCode from 'qrcode.react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
 
 
 const Header = () => {
@@ -180,7 +179,8 @@ const Header = () => {
     }
     
   }
-  
+
+
   
   
   useEffect(() => {
@@ -1040,7 +1040,7 @@ const Header = () => {
                       <QRCode value={walletAddress} style={{ border: '2px solid #fff' }}/>
                       </div>
                       )}
-                      <button onClick={handleDeposit}>Make Deposit</button>
+                      <button onClick={handleDeposit}>Complete Deposit</button>
                       </div>
                       </div>
                       <div className="tab-pane fade" id="withdraw" role="tabpanel" aria-labelledby="withdraw-tab">
