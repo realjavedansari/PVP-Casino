@@ -1,10 +1,11 @@
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/sidebar';
 import '../App.css';
 import Game from '../components/Game1';
+// import FullscreenPopup from '../components/FullScreen';
 
 
 const Crash = () => {
@@ -12,6 +13,7 @@ const Crash = () => {
   const [profitsTaken, setProfitsTaken] = useState(false);
   const [balance, setBalance] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   function takeProfit() {
     if (!gameStarted) {
@@ -35,12 +37,23 @@ const Crash = () => {
       }
     }
   }
+
+  // useEffect(() => {
+  //   setShowPopup(true);
+  // }, []);
   
   
   return (
     <div>
     <Header />
     <Sidebar />
+   
+   {/* {showPopup && (
+        <FullscreenPopup onClose={() => setShowPopup(false)}>
+          
+        </FullscreenPopup>
+      )} */}
+      
     <main id="main" className="main">
     <div className="row">
     <div className="col-md-8">
