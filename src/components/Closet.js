@@ -15,10 +15,10 @@ const ClosetGame = () => {
   useEffect(() => {
     if (selectedDoor !== '') {
       var $selectedCloset = $('#' + selectedDoor);
-      $selectedCloset.find('.door').addClass('door-open');
-      $selectedCloset.siblings().find('.door').removeClass('door-open');
       $selectedCloset.siblings().removeClass('closet-zoom');
       $selectedCloset.addClass('closet-zoom');
+      $selectedCloset.find('.door').addClass('door-open');
+      $selectedCloset.siblings().find('.door').removeClass('door-open');
 
       setTimeout(function () {
         $selectedCloset.find('.character').css('opacity', 1);
@@ -52,7 +52,7 @@ const ClosetGame = () => {
 
   return (
     <div className="container">
-      <div className={`closet ${selectedDoor === 'closet1' ? 'closet-zoom' : ''}`} id="closet1">
+      <div className={`closet ${selectedDoor === 'closet1' ? 'closet-zoom' : ''}`} id="closet1" >
         <div className="door"></div>
         <div className="character" id="biden"></div>
       </div>
