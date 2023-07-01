@@ -236,9 +236,12 @@ const Header = () => {
     setWalletOpen(true);
   };
   
-  const handleDisconnectWalletClick = () => {
-    setWalletOpen(false);
-  };
+  function handleDisconnectWalletClick(event) {
+    // Logic to disconnect the wallet goes here
+    window.location.reload();
+    // Prevent the default link behavior (e.g., navigating to a new page)
+    event.preventDefault();
+  }
   
   
   const connectToWallet = async () => {
@@ -528,6 +531,7 @@ const Header = () => {
     };
     
     
+
     
     return (
       <>
@@ -765,7 +769,6 @@ const Header = () => {
                 <div className="gprofile">
                 <img src="../img/profile-img.jpg" alt="Profile" className="rounded-circle" />
                 <div>
-                <h3>Seevi kargwal</h3>
                 <span>{accountAddress}</span>
                 </div>
                 </div>
@@ -904,10 +907,6 @@ const Header = () => {
                 </div>
                 )}
                 </div>
-                
-                
-                
-                
                 )}
                 
                 {!isWalletConnected && (
@@ -922,8 +921,7 @@ const Header = () => {
                   Connect Wallet
                   </a>
                   )}
-                  
-                  
+
                   <div className="modal cw-popup fade" id="connectWallet" tabIndex="-1" aria-labelledby="connectWalletLabel" aria-hidden="true">
                   <div className="modal-dialog modal-dialog-centered">
                   <div className="modal-content">

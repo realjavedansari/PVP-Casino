@@ -147,7 +147,7 @@ const Create = () => {
         </div>
         </div>
         <div className="col-md-12 col-lg-4 col-xl-3">
-        <a href="#" className="big-yllw-btn2 d-flex w-100 mb-4">
+        <a href="/" className="big-yllw-btn2 d-flex w-100 mb-4">
         <img src="../img/left-arrow-blck.svg" alt="" className="me-2" /> Go back to Games
         </a>
         <div className="card blck-card brdr-radius-16 px-0">
