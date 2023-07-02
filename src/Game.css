@@ -118,7 +118,7 @@
   
   }
   
-  @keyframes slideInFromLeft {
+  @keyframes slide-in-from-left {
     0% {
         transform: translateX(-100%);
         opacity: 0;
@@ -128,7 +128,12 @@
         opacity: 1;
     }
   }
-  @keyframes slideInFromRight {
+
+  .slideInFromLeft {
+    animation: slide-in-from-left 0.5s ease forwards;
+  }
+
+  @keyframes slide-in-from-right {
     0% {
         transform: translateX(100%);
         opacity: 0;
@@ -137,6 +142,10 @@
         transform: translateX(0);
         opacity: 1;
     }
+  }
+
+  .slideInFromRight {
+    animation: slide-in-from-right 0.5s ease forwards;
   }
   
   
