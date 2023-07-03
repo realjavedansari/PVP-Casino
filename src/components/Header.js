@@ -1051,7 +1051,7 @@ const Header = () => {
                 <button className="nav-link" id="withdraw-tab" data-bs-toggle="tab" data-bs-target="#withdraw" type="button" role="tab" aria-controls="withdraw" aria-selected="false">Withdraw</button>
                 </li>
                 <li className="nav-item" role="presentation">
-                <button className="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">History</button>
+                <button className="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">Transaction History</button>
                 </li>
                 </ul>
                 <div className="tab-content" id="myTabContent">
