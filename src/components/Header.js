@@ -13,7 +13,7 @@ window.Buffer = window.Buffer || require("buffer").Buffer;
 
 const Header = () => {
   const [accountAddress, setAccountAddress] = useState('');
-  const [isWalletConnected, setWalletConnected] = useState(false);
+  const [isWalletConnected, setWalletConnected] = useState(localStorage.getItem('isWalletConnected'));
   const [isWalletOpen, setWalletOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   // State to manage the visibility of the modal
@@ -66,6 +66,7 @@ const Header = () => {
         // If the connected wallet address is found, retrieve the member ID
         if (members && members.length > 0) {
           setMemberId(members[0].id);
+          console.log(members);
         }
       }
     };
@@ -95,6 +96,7 @@ const Header = () => {
   
   const handleCoinSelection = async (selectedCoinSymbol) => {
     setCoinSymbol(selectedCoinSymbol);
+    console.log(selectedCoinSymbol);
     
     // Fetch the chain ID for the selected coin and network
     const chainId = fetchChainId(selectedCoinSymbol);
@@ -273,6 +275,7 @@ const Header = () => {
               .insert([{ wallet_address: walletAddress, id_block: 'no' }]) // Set id_block to "no"
               .single();
               setWalletConnected(true);
+              localStorage.setItem('isWalletConnected', true);
               setAccountAddress(walletAddress);
               alert('You are logged in');
               
@@ -281,6 +284,7 @@ const Header = () => {
               
             } else {
               setWalletConnected(true);
+              localStorage.setItem('isWalletConnected', true);
               setAccountAddress(walletAddress);
               console.error('Error checking wallet:', error);
             }
@@ -288,6 +292,7 @@ const Header = () => {
             alert('Account suspended');
           } else {
             setWalletConnected(true);
+            localStorage.setItem('isWalletConnected', true);
             setAccountAddress(walletAddress);
             alert('You are logged in');
             
@@ -320,6 +325,7 @@ const Header = () => {
       const storedWalletConnected = localStorage.getItem('isWalletConnected');
       const initialWalletConnected = storedWalletConnected ? JSON.parse(storedWalletConnected) : false;
       setWalletConnected(initialWalletConnected);
+      localStorage.setItem('isWalletConnected', true);
     }, []);
     
     const updateWalletConnected = (connected) => {
