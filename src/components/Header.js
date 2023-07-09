@@ -189,10 +189,6 @@ const Header = () => {
   }
   
   
-  
-  
-  
-  
   useEffect(() => {
     if (isDropdownOpen) {
       fetchCoinData();
