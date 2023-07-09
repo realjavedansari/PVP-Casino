@@ -9,11 +9,17 @@ import { useCookies } from 'react-cookie';
 import QRCode from 'qrcode.react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import BTC from '../assets/btc.png';
+import ETH from '../assets/eth.png';
+import BNB from '../assets/bnb.png';
+import BUSD from '../assets/busd.png';
+import USDT from '../assets/usdt (2).png';
 window.Buffer = window.Buffer || require("buffer").Buffer;
+
 
 const Header = () => {
   const [accountAddress, setAccountAddress] = useState('');
-  const [isWalletConnected, setWalletConnected] = useState(localStorage.getItem('isWalletConnected'));
+  const [isWalletConnected, setWalletConnected] = useState(false);
   const [isWalletOpen, setWalletOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   // State to manage the visibility of the modal
@@ -37,7 +43,9 @@ const Header = () => {
   const [totalDeposit, setTotalDeposit] = useState(0.0);
   const [transactionHistory, setTransactionHistory] = useState([]);
   const [connectedAddress, setConnectedAddress] = useState('');
-  
+  const [deposits, setDeposits] = useState([]);
+  const [withdrawals, setWithdrawals] = useState([]);
+  const [activeTab, setActiveTab] = useState('deposit');
   const coinChainIds = {
     BTC: 0,
     ETH: 1,
@@ -66,7 +74,6 @@ const Header = () => {
         // If the connected wallet address is found, retrieve the member ID
         if (members && members.length > 0) {
           setMemberId(members[0].id);
-          console.log(members);
         }
       }
     };
@@ -74,7 +81,6 @@ const Header = () => {
     checkMemberAddress();
   }, []);
   
-  const bitcoin = require('bitcoinjs-lib');
   
   const fetchChainId = (symbol) => {
     // Check if the symbol exists in coinChainIds
@@ -96,7 +102,6 @@ const Header = () => {
   
   const handleCoinSelection = async (selectedCoinSymbol) => {
     setCoinSymbol(selectedCoinSymbol);
-    console.log(selectedCoinSymbol);
     
     // Fetch the chain ID for the selected coin and network
     const chainId = fetchChainId(selectedCoinSymbol);
@@ -104,6 +109,7 @@ const Header = () => {
       // Handle the case when chain ID is not found
       return;
     }
+    
     
     // Generate a new wallet address if the member ID is present and a coin is selected
     if (memberId && selectedCoinSymbol) {
@@ -144,54 +150,43 @@ const Header = () => {
             return;
           }
           
-          // If there is no existing wallet, generate a new one
-          let newAddress, privateKey;
           
-          if (selectedCoinSymbol.toLowerCase() === 'btc') {
-            // Generate BTC address (P2WPKH - Bech32 Native SegWit)
-            const btcNetwork = bitcoin.networks.bitcoin;
-            const btcWallet = bitcoin.ECPair.makeRandom({ network: btcNetwork });
-            const { address } = bitcoin.payments.p2wpkh({
-              pubkey: btcWallet.publicKey,
-              network: btcNetwork,
-            });
-            newAddress = address;
-            privateKey = btcWallet.toWIF();
-          }
-            
-            setWalletAddress(newAddress);
-            setPrivateKey(privateKey);
-            
-            // Insert a new row for the selected coin in the 'my_wallets' table
-            await supabase.from('my_wallets').insert([
-              {
-                mem_id: memberId,
-                symbol: selectedCoinSymbol,
-                chain_id: chainId,
-                new_address: newAddress,
-                private_key: privateKey,
-              },
-            ]);
-            
-            // Get the balance of the wallet address
-            const balance = await web3.eth.getBalance(newAddress);
-            const balanceInEther = web3.utils.fromWei(balance, 'ether');
-            console.log('Wallet Balance (in Ether):', balanceInEther);
-            
-          } catch (error) {
-            console.error(error);
-          }
-        } else {
-          console.error('Web3 not found!');
+          
+          
+          
+          // If there is no existing wallet, generate a new one
+          const account = web3.eth.accounts.create();
+          const newAddress = account.address;
+          const privateKey = account.privateKey;
+          setWalletAddress(newAddress);
+          setPrivateKey(privateKey);
+          
+          // Insert a new row for the selected coin in the 'my_wallets' table
+          await supabase.from('my_wallets').insert([
+            {
+              mem_id: memberId,
+              symbol: selectedCoinSymbol,
+              chain_id: chainId,
+              new_address: newAddress,
+              private_key: privateKey,
+            },
+          ]);
+          
+          
+          // Get the balance of the wallet address
+          const balance = await web3.eth.getBalance(newAddress);
+          const balanceInEther = web3.utils.fromWei(balance, 'ether');
+          console.log('Wallet Balance (in Ether):', balanceInEther);
+          
+        } catch (error) {
+          console.error(error);
         }
+      } else {
+        console.error('Web3 not found!');
       }
-    };
+    }
     
   }
-  
-  
-  
-  
   
   
   useEffect(() => {
@@ -796,267 +791,308 @@ const Header = () => {
             {coinData.map((coin) => {
               return (
                 <div key={coin.id} onClick={() => handleCoinSelect(coin)}>
-                <img src={coinImages[coin.symbol]} />
+                <img src={coinImages.BTC} className="coin-logo" />
                 {coin.name}
                 </div>
-                ))}
+                );
+              })}
+              </div>
+              )}
+              </li>
+              
+              
+              <li className="nav-item dropdown pe-3">
+              <a className="gamerProfile eps nav-link nav-profile d-flex align-items-center pe-0" href="#" onClick={toggleSidebar}>
+              <img src="../img/profile-img.jpg" alt="Profile" className="rounded-circle" />
+              </a>
+              </li>
+              </ul>
+              {showSidebar && (
+                <div className="sidebar-right">
+                <a href="#" id="sideClose" onClick={closeSidebar}></a>
+                <div>
+                <div className="gprofile">
+                <img src="../img/profile-img.jpg" alt="Profile" className="rounded-circle" />
+                
+                <div>
+                <span>{accountAddress}</span>
                 </div>
+                </div>
+                
+                <ul className="sidebar-nav" id="sidebar-nav">
+                <li className="nav-item">
+                <a className="nav-link b collapsed" data-bs-target="#myaccount" data-bs-toggle="collapse" href="#">
+                <span>My account</span><FaChevronDown className="ms-auto" />
+                </a>
+                <ul id="myaccount" className="nav-content collapse" data-bs-parent="#sidebar-nav">
+                <li>
+                <a href="#">
+                <span>Personal Details</span>
+                </a>
+                </li>
+                {/* <li>
+                <a href="#">
+                <span>Lorem ipsum</span>
+                </a>
+                </li>
+                <li>
+                <a href="#">
+                <span>Lorem ipsum</span>
+                </a>
+              </li> */}
+              </ul>
+              </li>
+              <li className="nav-item">
+              <a className="nav-link b collapsed" data-bs-target="#myactivity" data-bs-toggle="collapse" href="#">
+              <span>My activity</span><FaChevronDown className="ms-auto" />
+              </a>
+              <ul id="myactivity" className="nav-content collapse" data-bs-parent="#sidebar-nav">
+              <li>
+              <a href="#">
+              <span>Lorem ipsum</span>
+              </a>
+              </li>
+              <li>
+              <a href="#">
+              <span>Lorem ipsum</span>
+              </a>
+              </li>
+              <li>
+              <a href="#">
+              <span>Lorem ipsum</span>
+              </a>
+              </li>
+              </ul>
+              </li>
+              </ul>
+              
+              <div className="gchart px-4 py-3">
+              <img src="../img/chart-1.png" alt="" className="img-fluid py-4" />
+              <a href="#" className="big-yllw-btn2" data-bs-toggle="modal" data-bs-target="#manageFunds"  onClick={toggleModal}>
+              Manage funds
+              </a>
+              </div>
+              <hr />
+              
+              <div className="show-low p-4">
+              <div className="sl-check">
+              <input type="checkbox" className="css-checkbox" id="checkbox1" defaultChecked={true} />
+              <label htmlFor="checkbox1" name="checkbox1_lbl" className="css-label lite-green-check">
+              Show low balance:
+              </label>
+              </div>
+              <ul>
+              <li>
+              <div className="sl-coin">
+              <img src="../img/bitcoin.png" alt="" />
+              <strong>BTC</strong>
+              </div>
+              <div className="sl-balance">
+              <strong>0</strong>
+              <a href="#">
+              <img src="../img/add-circle.svg" alt="" />
+              </a>
+              <a href="#">
+              <img src="../img/arrowRightPlain.svg" alt="" />
+              </a>
+              </div>
+              </li>
+              <li>
+              <div className="sl-coin">
+              <img src="../img/ethereum.png" alt="" />
+              <strong>ETH</strong>
+              </div>
+              <div className="sl-balance">
+              <strong>0</strong>
+              <a href="#">
+              <img src="../img/add-circle.svg" alt="" />
+              </a>
+              <a href="#">
+              <img src="../img/arrowRightPlain.svg" alt="" />
+              </a>
+              </div>
+              </li>
+              <li>
+              <div className="sl-coin">
+              <img src="../img/solana.png" alt="" />
+              <strong>SOL</strong>
+              </div>
+              <div className="sl-balance">
+              <strong>0</strong>
+              <a href="#">
+              <img src="../img/add-circle.svg" alt="" />
+              </a>
+              <a href="#">
+              <img src="../img/arrowRightPlain.svg" alt="" />
+              </a>
+              </div>
+              </li>
+              <li>
+              <div className="sl-coin">
+              <img src="../img/ripple.png" alt="" />
+              <strong>SRP</strong>
+              </div>
+              <div className="sl-balance">
+              <strong className="ps-2">0</strong>
+              <a href="#">
+              <img src="../img/add-circle.svg" alt="" />
+              </a>
+              <a href="#">
+              <img src="../img/arrowRightPlain.svg" alt="" />
+              </a>
+              </div>
+              </li>
+              </ul>
+              </div>
+              
+              <a href="#" className="disconnect-link"  onClick={handleDisconnectWalletClick}>
+              <img src="../img/logout-icon.svg" alt="" />
+              <span>Disconnect</span>
+              </a>
+              </div>
+              </div>
+              )}
+              </div>
+              )}
+              
+              {!isWalletConnected && (
+                <a
+                href="#"
+                className="big-yllw-btn" 
+                id='thebtn'
+                data-bs-toggle="modal"
+                data-bs-target="#connectWallet"
+                onClick={connectWallet}
+                >
+                Connect Wallet
+                </a>
                 )}
                 
+                <div className="modal cw-popup fade" id="connectWallet" tabIndex="-1" aria-labelledby="connectWalletLabel" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content">
+                <div className="modal-body p-0">
+                <div className="cw-sec">
+                <div className="cw-content p-16">
+                <h3 className="mb-2">Connect with Wallet</h3>
+                <p>
+                Start by connecting with one of the wallets below.
+                </p>
+                <ul>
+                <li>
+                <a href="#" onClick={connectToWallet}>
+                <img src="../img/binance-wallet.png" alt="" />
+                <span>Binance Wallet</span>
+                </a>
                 </li>
-                
-                
-                <li className="nav-item dropdown pe-3">
-                <a className="gamerProfile eps nav-link nav-profile d-flex align-items-center pe-0" href="#" onClick={toggleSidebar}>
-                <img src="../img/profile-img.jpg" alt="Profile" className="rounded-circle" />
+                <li>
+                <a href="#" onClick={connectToWallet}>
+                <img src="../img/trust-wallet.png" alt="" />
+                <span>Trust Wallet</span>
+                </a>
+                </li>
+                <li>
+                <a href="#" onClick={connectToWallet}>
+                <img src="../img/metaMask-wallet.png" alt="" />
+                <span>Metamask</span>
+                </a>
+                </li>
+                <li>
+                <a href="#" onClick={connectToWallet}>
+                <img src="../img/coinbase-wallet.png" alt="" />
+                <span>Coinbase Wallet</span>
+                </a>
+                </li>
+                <li>
+                <a href="#" onClick={connectToWallet}>
+                <img src="../img/wallet-connect.png" alt="" />
+                <span>WalletConnect</span>
                 </a>
                 </li>
                 </ul>
-                {showSidebar && (
-                  <div className="sidebar-right">
-                  <a href="#" id="sideClose" onClick={closeSidebar}></a>
-                  <div>
-                  <div className="gprofile">
-                  <img src="../img/profile-img.jpg" alt="Profile" className="rounded-circle" />
-                  <div>
-                  <span>{accountAddress}</span>
+                </div>
+                <div className="cw-code p-16">
+                <h3 className="mb-4">Scan with Trust Wallet</h3>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div className="cwqr-code p-16 brdr-radius-16 mb-3">
+                <img src="../img/qr-code.png" alt="" className="img-fluid" />
+                </div>
+                <div className="cw-get">
+                <p className="mb-0">Get Trust wallet app</p>
+                <a href="#" className="small-yllow-brdr-btn2">Get</a>
+                </div>
+                </div>
+                </div>
+                </div>
+                </div>
+                </div>
+                </div>
+                
+                {/* Mutual Fund */}
+                
+                <div className="modal cw-popup mfunds fade" id="manageFunds" tabIndex="-1" aria-labelledby="manageFundsLabel" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content">
+                <div className="modal-header">
+                <h3 className="mb-2">Manage Funds</h3>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div className="modal-body p-0">
+                <div className="mf-tabs">
+                <ul className="nav nav-tabs" id="myTab" role="tablist">
+                <li className="nav-item" role="presentation">
+                <button className="nav-link active" id="deposit-tab" data-bs-toggle="tab" data-bs-target="#deposit" type="button" role="tab" aria-controls="deposit" aria-selected="true">Deposit</button>
+                </li>
+                <li className="nav-item" role="presentation">
+                <button className="nav-link" id="withdraw-tab" data-bs-toggle="tab" data-bs-target="#withdraw" type="button" role="tab" aria-controls="withdraw" aria-selected="false">Withdraw</button>
+                </li>
+                <li className="nav-item" role="presentation">
+                <button className="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">Transaction History</button>
+                </li>
+                </ul>
+                <div className="tab-content" id="myTabContent">
+                <div className="tab-pane fade show active" id="deposit" role="tabpanel" aria-labelledby="deposit-tab">
+                <div>
+                <div className="form-group">
+                <label>Select a crypto coin</label>
+                <div className="custom-dropdown">
+                <select className="form-control" value={coinSymbol} onChange={(e) => handleCoinSelection(e.target.value)}>
+                {cryptoCoins.map((coin) => (
+                  <option key={coin.symbol} value={coin.symbol}>
+                  {coin.name} ({coin.symbol})
+                  </option>
+                  ))}
+                  </select>
+                  </div>
+                  <label>Select a network</label>
+                  <div className="custom-dropdown">
+                  <select className="form-control" value={network} onChange={(e) => handleNetworkSelection(e.target.value)}>
+                  <option value="eth">Ethereum ERC20</option>
+                  <option value="bnb">Binance BEP20</option>
+                  <option value="btc">Bitcoin</option>
+                  </select>
                   </div>
                   </div>
-                  
-                  <ul className="sidebar-nav" id="sidebar-nav">
-                  <li className="nav-item">
-                  <a className="nav-link b collapsed" data-bs-target="#myaccount" data-bs-toggle="collapse" href="#">
-                  <span>My account</span><FaChevronDown className="ms-auto" />
-                  </a>
-                  <ul id="myaccount" className="nav-content collapse" data-bs-parent="#sidebar-nav">
-                  <li>
-                  <a href="#">
-                  <span>Lorem ipsum</span>
-                  </a>
-                  </li>
-                  <li>
-                  <a href="#">
-                  <span>Lorem ipsum</span>
-                  </a>
-                  </li>
-                  <li>
-                  <a href="#">
-                  <span>Lorem ipsum</span>
-                  </a>
-                  </li>
-                  </ul>
-                  </li>
-                  <li className="nav-item">
-                  <a className="nav-link b collapsed" data-bs-target="#myactivity" data-bs-toggle="collapse" href="#">
-                  <span>My activity</span><FaChevronDown className="ms-auto" />
-                  </a>
-                  <ul id="myactivity" className="nav-content collapse" data-bs-parent="#sidebar-nav">
-                  <li>
-                  <a href="#">
-                  <span>Lorem ipsum</span>
-                  </a>
-                  </li>
-                  <li>
-                  <a href="#">
-                  <span>Lorem ipsum</span>
-                  </a>
-                  </li>
-                  <li>
-                  <a href="#">
-                  <span>Lorem ipsum</span>
-                  </a>
-                  </li>
-                  </ul>
-                  </li>
-                  </ul>
-                  
-                  <div className="gchart px-4 py-3">
-                  <img src="../img/chart-1.png" alt="" className="img-fluid py-4" />
-                  <a href="#" className="big-yllw-btn2" data-bs-toggle="modal" data-bs-target="#manageFunds"  onClick={toggleModal}>
-                  Manage funds
-                  </a>
+                  <div className="form-group">
+                  <label>Deposit Currency</label>
+                  <input type="number" className="form-control" value={0.0000} readOnly />
+                  <small>Available: {totalDeposit.toFixed(2)} DW</small>
                   </div>
-                  <hr />
-                  
-                  <div className="show-low p-4">
-                  <div className="sl-check">
-                  <input type="checkbox" className="css-checkbox" id="checkbox1" defaultChecked={true} />
-                  <label htmlFor="checkbox1" name="checkbox1_lbl" className="css-label lite-green-check">
-                  Show low balance:
-                  </label>
-                  </div>
-                  <ul>
-                  <li>
-                  <div className="sl-coin">
-                  <img src="../img/bitcoin.png" alt="" />
-                  <strong>BTC</strong>
-                  </div>
-                  <div className="sl-balance">
-                  <strong>0</strong>
-                  <a href="#">
-                  <img src="../img/add-circle.svg" alt="" />
-                  </a>
-                  <a href="#">
-                  <img src="../img/arrowRightPlain.svg" alt="" />
-                  </a>
-                  </div>
-                  </li>
-                  <li>
-                  <div className="sl-coin">
-                  <img src="../img/ethereum.png" alt="" />
-                  <strong>ETH</strong>
-                  </div>
-                  <div className="sl-balance">
-                  <strong>0</strong>
-                  <a href="#">
-                  <img src="../img/add-circle.svg" alt="" />
-                  </a>
-                  <a href="#">
-                  <img src="../img/arrowRightPlain.svg" alt="" />
-                  </a>
-                  </div>
-                  </li>
-                  <li>
-                  <div className="sl-coin">
-                  <img src="../img/solana.png" alt="" />
-                  <strong>SOL</strong>
-                  </div>
-                  <div className="sl-balance">
-                  <strong>0</strong>
-                  <a href="#">
-                  <img src="../img/add-circle.svg" alt="" />
-                  </a>
-                  <a href="#">
-                  <img src="../img/arrowRightPlain.svg" alt="" />
-                  </a>
-                  </div>
-                  </li>
-                  <li>
-                  <div className="sl-coin">
-                  <img src="../img/ripple.png" alt="" />
-                  <strong>SRP</strong>
-                  </div>
-                  <div className="sl-balance">
-                  <strong className="ps-2">0</strong>
-                  <a href="#">
-                  <img src="../img/add-circle.svg" alt="" />
-                  </a>
-                  <a href="#">
-                  <img src="../img/arrowRightPlain.svg" alt="" />
-                  </a>
-                  </div>
-                  </li>
-                  </ul>
-                  </div>
-                  
-                  <a href="#" className="disconnect-link"  onClick={handleDisconnectWalletClick}>
-                  <img src="../img/logout-icon.svg" alt="" />
-                  <span>Disconnect</span>
-                  </a>
-                  </div>
-                  </div>
-                  )}
-                  </div>
-                  )}
-                  
-                  {!isWalletConnected && (
-                    <a
-                    href="#"
-                    className="big-yllw-btn" 
-                    id='thebtn'
-                    data-bs-toggle="modal"
-                    data-bs-target="#connectWallet"
-                    onClick={connectWallet}
-                    >
-                    Connect Wallet
-                    </a>
+                  {walletAddress && (
+                    <div className="form-group d-flex align-items-center">
+                    <p>Wallet Address: {walletAddress}</p>
+                    <QRCode value={walletAddress} style={{ border: '2px solid #fff' }}/>
+                    </div>
                     )}
-                    
-                    <div className="modal cw-popup fade" id="connectWallet" tabIndex="-1" aria-labelledby="connectWalletLabel" aria-hidden="true">
-                    <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content">
-                    <div className="modal-body p-0">
-                    <div className="cw-sec">
-                    <div className="cw-content p-16">
-                    <h3 className="mb-2">Connect with Wallet</h3>
-                    <p>
-                    Start by connecting with one of the wallets below.
-                    </p>
-                    <ul>
-                    <li>
-                    <a href="#" onClick={connectToWallet}>
-                    <img src="../img/binance-wallet.png" alt="" />
-                    <span>Binance Wallet</span>
-                    </a>
-                    </li>
-                    <li>
-                    <a href="#" onClick={connectToWallet}>
-                    <img src="../img/trust-wallet.png" alt="" />
-                    <span>Trust Wallet</span>
-                    </a>
-                    </li>
-                    <li>
-                    <a href="#" onClick={connectToWallet}>
-                    <img src="../img/metaMask-wallet.png" alt="" />
-                    <span>Metamask</span>
-                    </a>
-                    </li>
-                    <li>
-                    <a href="#" onClick={connectToWallet}>
-                    <img src="../img/coinbase-wallet.png" alt="" />
-                    <span>Coinbase Wallet</span>
-                    </a>
-                    </li>
-                    <li>
-                    <a href="#" onClick={connectToWallet}>
-                    <img src="../img/wallet-connect.png" alt="" />
-                    <span>WalletConnect</span>
-                    </a>
-                    </li>
-                    </ul>
-                    </div>
-                    <div className="cw-code p-16">
-                    <h3 className="mb-4">Scan with Trust Wallet</h3>
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    <div className="cwqr-code p-16 brdr-radius-16 mb-3">
-                    <img src="../img/qr-code.png" alt="" className="img-fluid" />
-                    </div>
-                    <div className="cw-get">
-                    <p className="mb-0">Get Trust wallet app</p>
-                    <a href="#" className="small-yllow-brdr-btn2">Get</a>
+                    <button onClick={handleDeposit}>Complete Deposit</button>
                     </div>
                     </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    
-                    {/* Mutual Fund */}
-                    
-                    <div className="modal cw-popup mfunds fade" id="manageFunds" tabIndex="-1" aria-labelledby="manageFundsLabel" aria-hidden="true">
-                    <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content">
-                    <div className="modal-header">
-                    <h3 className="mb-2">Manage Funds</h3>
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div className="modal-body p-0">
-                    <div className="mf-tabs">
-                    <ul className="nav nav-tabs" id="myTab" role="tablist">
-                    <li className="nav-item" role="presentation">
-                    <button className="nav-link active" id="deposit-tab" data-bs-toggle="tab" data-bs-target="#deposit" type="button" role="tab" aria-controls="deposit" aria-selected="true">Deposit</button>
-                    </li>
-                    <li className="nav-item" role="presentation">
-                    <button className="nav-link" id="withdraw-tab" data-bs-toggle="tab" data-bs-target="#withdraw" type="button" role="tab" aria-controls="withdraw" aria-selected="false">Withdraw</button>
-                    </li>
-                    <li className="nav-item" role="presentation">
-                    <button className="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">History</button>
-                    </li>
-                    </ul>
-                    <div className="tab-content" id="myTabContent">
-                    <div className="tab-pane fade show active" id="deposit" role="tabpanel" aria-labelledby="deposit-tab">
+                    <div className="tab-pane fade" id="withdraw" role="tabpanel" aria-labelledby="withdraw-tab">
                     <div>
+                    <div className="form-group">
+                    <label>Type token name or symbol or paste in address</label>
+                    <input type="text" className="form-control" value={token} onChange={(e) => setToken(e.target.value)} />
+                    </div>
                     <div className="form-group">
                     <label>Select a crypto coin</label>
                     <div className="custom-dropdown">
@@ -1068,71 +1104,85 @@ const Header = () => {
                       ))}
                       </select>
                       </div>
-                      <label>Select a network</label>
-                      <div className="custom-dropdown">
-                      <select className="form-control" value={network} onChange={(e) => handleNetworkSelection(e.target.value)}>
-                      <option value="eth">Ethereum ERC20</option>
-                      <option value="bnb">Binance BEP20</option>
-                      <option value="btc">Bitcoin</option>
-                      </select>
                       </div>
-                      </div>
+                      
                       <div className="form-group">
-                      <label>Deposit Currency</label>
-                      <input type="number" className="form-control" value={0.0000} readOnly />
-                      <small>Available: {totalDeposit.toFixed(2)} DW</small>
+                      <label>Enter Amount to Withdraw</label>
+                      <input type="number" className="form-control" value={amount} onChange={(e) => setAmount(e.target.value)} />
+                      <small>Available: {totalDeposit.toFixed(2)}</small>
                       </div>
-                      {walletAddress && (
-                        <div className="form-group d-flex align-items-center">
-                        <p>Wallet Address: {walletAddress}</p>
-                        <QRCode value={walletAddress} style={{ border: '2px solid #fff' }}/>
-                        </div>
-                        )}
-                        <button onClick={handleDeposit}>Complete Deposit</button>
-                        </div>
-                        </div>
-                        <div className="tab-pane fade" id="withdraw" role="tabpanel" aria-labelledby="withdraw-tab">
-                        <div>
-                        <div className="form-group">
-                        <label>Type token name or symbol or paste in address</label>
-                        <input type="text" className="form-control" value={token} onChange={(e) => setToken(e.target.value)} />
-                        </div>
-                        <div className="form-group">
-                        <label>Select a crypto coin</label>
-                        <div className="custom-dropdown">
-                        <select className="form-control" value={coinSymbol} onChange={(e) => handleCoinSelection(e.target.value)}>
-                        {cryptoCoins.map((coin) => (
-                          <option key={coin.symbol} value={coin.symbol}>
-                          {coin.name} ({coin.symbol})
-                          </option>
+                      <div className="form-group d-flex align-items-center">
+                      <button className="btn big-yllw-btn2 px-4" onClick={handleWithdraw} >Withdraw</button>
+                      </div>
+                      </div>
+                      </div>
+                      <div className="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                      <div className="tab-container">
+                      <button
+                      className={`tab-button ${activeTab === 'deposit' ? 'active' : ''}`}
+                      onClick={() => handleTabChange('deposit')}
+                      >
+                      Deposits
+                      </button>
+                      <button
+                      className={`tab-button ${activeTab === 'withdraw' ? 'active' : ''}`}
+                      onClick={() => handleTabChange('withdraw')}
+                      >
+                      Withdrawals
+                      </button>
+                      </div>
+                      {activeTab === 'deposit' && (
+                        <table className="transaction-table">
+                        <thead>
+                        <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Coin</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {deposits.map((deposit) => (
+                          <tr key={deposit.id}>
+                          <td>{deposit.created_at}</td>
+                          <td>{deposit.deposit_amount}</td>
+                          <td>{deposit.coin_id}</td>
+                          </tr>
                           ))}
-                          </select>
-                          </div>
-                          </div>
-                          
-                          <div className="form-group">
-                          <label>Enter Amount to Withdraw</label>
-                          <input type="number" className="form-control" value={amount} onChange={(e) => setAmount(e.target.value)} />
-                          <small>Available: {totalDeposit.toFixed(2)}</small>
-                          </div>
-                          <div className="form-group d-flex align-items-center">
-                          <button className="btn big-yllw-btn2 px-4" onClick={handleWithdraw} >Withdraw</button>
-                          </div>
-                          </div>
-                          </div>
-                          <div className="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
-                          </div>
-                          </div>
-                          </div>
-                          </div>
-                          </div>
-                          </div>
-                          </div>
-                          </nav>
-                          </header>
-                          </>
-                          );
-                        };
-                        
-                        export default Header
-                        
+                          </tbody>
+                          </table>
+                          )}
+                          {activeTab === 'withdraw' && (
+                            <table className="transaction-table">
+                            <thead>
+                            <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Coin</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {withdrawals.map((withdrawal) => (
+                              <tr key={withdrawal.id}>
+                              <td>{withdrawal.created_at}</td>
+                              <td>{withdrawal.amount}</td>
+                              <td>{withdrawal.coin}</td>
+                              </tr>
+                              ))}
+                              </tbody>
+                              </table>
+                              )}
+                              </div>
+                              </div>
+                              </div>
+                              </div>
+                              </div>
+                              </div>
+                              </div>
+                              </nav>
+                              </header>
+                              </>
+                              );
+                            };
+                            
+                            export default Header
+                            
