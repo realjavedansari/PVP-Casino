@@ -6,9 +6,14 @@ const ClosetGame = () => {
   const [selectedDoor, setSelectedDoor] = useState('');
 
   useEffect(() => {
+    var hasSelectedDoor = false;
+
     $('.door').click(function () {
-      var $closet = $(this).parent();
-      setSelectedDoor($closet.attr('id'));
+      if (hasSelectedDoor == false) {
+        var $closet = $(this).parent();
+        setSelectedDoor($closet.attr('id'));
+        hasSelectedDoor = true;
+      }
     });
   }, []);
 
