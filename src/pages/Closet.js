@@ -5,6 +5,8 @@ import Sidebar from '../components/sidebar';
 import ClosetGame from '../components/Closet';
 
 const Closet = () => {
+
+  
   return (
     <div>
       <Header />
