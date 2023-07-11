@@ -60,7 +60,7 @@ const Game = ({ betAmount }) => {
         <div>
         <div id="gameContainer">
         <canvas id="game" ref={canvasRef} height="400" width="700"></canvas>
-        <img src ="../img/kim-jong-high.png" ref = { imgRef } style={{display: 'none'}} />
+        <img src ="/public/img/kim-jong-high.png" ref = { imgRef } style={{display: 'none'}} />
         <p id="currentMultiplier">0.0x</p>
         </div>
         
