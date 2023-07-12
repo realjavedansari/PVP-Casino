@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useEffect } from 'react';
 import '../App.css';
 import { FaChevronDown, FaDotCircle } from "react-icons/fa";
+import {Link} from 'react-router-dom'
 
 const Sidebar = () => {
   useEffect(() => {
@@ -130,10 +131,10 @@ return (
           </ul>
         </li>
         <li className="nav-item">
-          <a className="nav-link b collapsed" href="/creategame">
+          <Link className="nav-link b collapsed" to="/creategame">
             <img src="../img/create-icon.svg" alt="Icon" />
             <span>Create</span>
-          </a>
+          </Link>
         </li>
         <hr />
         <li className="nav-heading">Foundation</li>

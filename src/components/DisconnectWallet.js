@@ -1,4 +1,5 @@
 import React from 'react'
+import {Link} from 'react-router-dom'
 
 const DisconnectWallet = () => {
   return (
@@ -40,7 +41,7 @@ const DisconnectWallet = () => {
             <img src="../img/profile-img.jpg" alt="User" className="guser-img" />
             <span>Madelyn</span>
             </div>
-            <a href="/crash" className="small-yllow-brdr-btn">Join</a>
+            <Link to="/crash" className="small-yllow-brdr-btn">Join</Link>
             </div>
             </div>
             </div>
@@ -64,7 +65,7 @@ const DisconnectWallet = () => {
             <img src="../img/profile-img.jpg" alt="User" className="guser-img" />
             <span>Madelyn</span>
             </div>
-            <a href="/closet" className="small-yllow-brdr-btn">Join</a>
+            <Link to="/closet" className="small-yllow-brdr-btn">Join</Link>
             </div>
             </div>
             </div>
@@ -88,7 +89,7 @@ const DisconnectWallet = () => {
             <img src="../img/profile-img.jpg" alt="User" className="guser-img" />
             <span>Madelyn</span>
             </div>
-            <a href="/dictator" className="small-yllow-brdr-btn">Join</a>
+            <Link to="/dictator" className="small-yllow-brdr-btn">Join</Link>
             </div>
             </div>
             </div>
