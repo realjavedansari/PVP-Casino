@@ -61,6 +61,7 @@ const ClosetGame = ({ betAmount, onBetAmountChange }) => {
     }
   }, [selectedDoor]);
 
+  
   return (
     <div className="container">
       <div className={`closet ${selectedDoor === 'closet1' ? 'closet-zoom' : ''}`} id="closet1" >
