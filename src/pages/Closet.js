@@ -6,6 +6,23 @@ import ClosetGame from '../components/Closet';
 
 const Closet = () => {
 
+  const [betAmount, setBetAmount] = useState(0);
+  const [isBetPlaced, setIsBetPlaced] = useState(false);
+
+  const handleBetAmountChange = (event) => {
+    setBetAmount(Number(event.target.value));
+  };
+
+  const handlePlaceBet = () => {
+    // Perform any necessary validations and further logic with the betAmount
+    console.log('Placing bet:', betAmount);
+    setIsBetPlaced(true);
+  };
+
+  const handleCashOut = () => {
+    // Perform any necessary logic for cashing out
+    console.log('Cashing out...');
+  };
   
   return (
     <div>
@@ -17,7 +34,7 @@ const Closet = () => {
     <div className="mb-4">
     
    {/* <img src='../img/crash-game-1.png' alt="" className="img-fluid w-100" /> */}
-   <ClosetGame />
+   <ClosetGame betAmount={betAmount} />
     
     </div>
     
@@ -188,6 +205,8 @@ const Closet = () => {
     <input
     type="number"
     className="form-control"
+    value={betAmount}
+    onChange={handleBetAmountChange}
     />
     <a href='#'>
     <img src="../img/white-close-circle.svg" alt="" />
@@ -201,13 +220,23 @@ const Closet = () => {
     </a>
     </div>
     </div>
-    <button
-          type="button"
-          className="big-yllw-btn2 d-block w-100"
-          
-        >
-          Bet
-        </button>
+    {isBetPlaced ? (
+                <button
+                  type="button"
+                  className="big-yllw-btn2 d-block w-100"
+                  onClick={handleCashOut}
+                >
+                  Cash Out
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="big-yllw-btn2 d-block w-100"
+                  onClick={handlePlaceBet}
+                >
+                  Bet
+                </button>
+              )}
     </div>
     </div>
     </div>
