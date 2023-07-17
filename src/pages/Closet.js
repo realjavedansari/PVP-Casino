@@ -1,13 +1,16 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/sidebar';
 import ClosetGame from '../components/Closet';
+import { createClient } from '@supabase/supabase-js';
 
 const Closet = () => {
 
   const [betAmount, setBetAmount] = useState(0);
   const [isBetPlaced, setIsBetPlaced] = useState(false);
+  const [connectedAddress, setConnectedAddress] = useState('');
+  const [memberId, setMemberId] = useState('');
 
   const handleBetAmountChange = (event) => {
     setBetAmount(Number(event.target.value));
@@ -16,13 +19,65 @@ const Closet = () => {
   const handlePlaceBet = () => {
     // Perform any necessary validations and further logic with the betAmount
     console.log('Placing bet:', betAmount);
+    generateGameId();
     setIsBetPlaced(true);
   };
+  
 
   const handleCashOut = () => {
     // Perform any necessary logic for cashing out
     console.log('Cashing out...');
   };
+
+
+    // Create Supabase client instance
+    const supabaseKey = process.env.REACT_APP_SUPABASE_KEY;
+    const supabaseURL = 'https://pvdwlvsbwghrvngjxvmw.supabase.co';
+    const supabase = createClient(supabaseURL, supabaseKey);
+
+  useEffect(() => {
+    const checkMemAddress = async () => {
+      if (window.ethereum && window.ethereum.selectedAddress) {
+        const connectedAddress = window.ethereum.selectedAddress.toLowerCase();
+        
+        // Check if the connected wallet address is present in the member table
+        const { data: members, error } = await supabase
+        .from('members')
+        .select('id')
+        .eq('wallet_address', connectedAddress);
+        
+        if (error) {
+          console.error(error);
+          return;
+        }
+        
+        // If the connected wallet address is found, retrieve the member ID
+        if (members && members.length > 0) {
+          setMemberId(members[0].id);
+        }
+        setConnectedAddress(connectedAddress); // Set the connected address in state
+      }
+    };
+    
+    checkMemAddress();
+  }, []);
+
+  const generateGameId = () => {
+    // Generate a random game ID
+    const gameId = Math.floor(Math.random() * 1000000).toString();
+  
+    // Store the game ID in Supabase
+    supabase
+      .from('gameplay_wallet')
+      .insert([{ 'game_id' : gameId,'bet_amount': betAmount,'wallet_address': connectedAddress }])
+      .then((response) => {
+        console.log('Game ID stored in Supabase:', gameId);
+      })
+      .catch((error) => {
+        console.error('Error storing game ID in Supabase:', error);
+      });
+  };
+  
 
   return (
     <div>
