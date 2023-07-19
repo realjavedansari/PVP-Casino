@@ -10,6 +10,8 @@ import Dictator from './pages/Dictator';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AdminPage from './pages/AdminPage';
 import Error from './pages/Error';
+import Personal from './pages/Personal';
+
 // import Admin from './components/Admin1/Admin';
 
 createRoot(document.getElementById('root')).render(
@@ -23,6 +25,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/dictator" element={<Dictator />} />
         {/* <Route path="/admin/*" element={<Admin />} /> */}
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/personal" element={<Personal />} />
         <Route component={<Error />} />
       </Routes>
     </Router>

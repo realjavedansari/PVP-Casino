@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import '../Game.css';
 import $ from 'jquery';
 
-const ClosetGame = () => {
+const ClosetGame = ({ betAmount, onBetAmountChange }) => {
   const [selectedDoor, setSelectedDoor] = useState('');
 
   useEffect(() => {
@@ -16,6 +16,12 @@ const ClosetGame = () => {
       }
     });
   }, []);
+
+  const handleBetButtonClick = () => {
+    // Perform any necessary validation for the bet amount
+    // and call the callback function to update the bet amount in the parent component
+    onBetAmountChange(2000);
+  };
 
   useEffect(() => {
     if (selectedDoor !== '') {
@@ -55,6 +61,7 @@ const ClosetGame = () => {
     }
   }, [selectedDoor]);
 
+  
   return (
     <div className="container">
       <div className={`closet ${selectedDoor === 'closet1' ? 'closet-zoom' : ''}`} id="closet1" >
